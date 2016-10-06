@@ -3,17 +3,18 @@ import sizeMe from 'react-sizeme';
 
 class WidthProvider extends Component {
 	static propTypes = {
-		width: PropTypes.func
+		width: PropTypes.func.isRequired
 	};
 
 	static defaultProps = {
 		width: () => {}
 	};
 
+	componentWillReceiveProps(nextProps) {
+		nextProps.width(nextProps.size.width);
+	}
+
 	render() {
-		if (this.props.children.length > 0) {
-			this.props.width(this.props.size.width);
-		}
 		return this.props.children;
 	}
 }
