@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconMenu from 'material-ui/IconMenu';
@@ -59,12 +59,14 @@ class MaterialToolbar extends Component {
 	};
 
 	actionFactory = (func, key, link) => {
+		console.log(func, key, link);
 			// complete button to toolbar
 		if (link) {
-			<RaisedButton
-				{...getRaisButtonProps(key, func.priority, func.label, undefined, func.disabled)}
-				><Link to={func.href} />
-			</RaisedButton>
+			return (
+				<RaisedButton
+					{...getRaisButtonProps(key, func.priority, func.label, () => browserHistory.push(func.href), func.disabled)}
+					/>
+			);
 		} else {
 			return (
 				<RaisedButton

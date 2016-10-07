@@ -72,6 +72,11 @@ export const secondaryFunctions = [
 		icon: <MoreVertIcon hoverColor={blue500}/>,
 		disabled: false,
 		priority: 1
+	}, {
+		href:'/appbar',
+		label: 'AppbarLink',
+		disabled: false,
+		priority: 1
 	}
 ];
 
