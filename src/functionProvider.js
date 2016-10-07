@@ -12,36 +12,36 @@ import { blue500, red500 } from 'material-ui/styles/colors';
 export const primaryFunctions = [
 	{
 		href: '/',
-		label: 'primAction1',
+		label: 'Home',
 		icon: <Home hoverColor={blue500}/>,
 		disabled: false,
 		priority: 1
 	}, {
 		href: '/Demo1',
-		label: 'primAction1',
+		label: 'Demo1 link',
 		icon: <Left hoverColor={blue500}/>,
 		disabled: false,
 		priority: 1
 	}, {
 		href: '/Demo2',
-		label: 'primAction1',
+		label: 'Demo2 link',
 		icon: <Right hoverColor={blue500}/>,
 		disabled: false,
 		priority: 1
 	}, {
-		onAction: () => {console.log('action1')},
-		label: 'primAction1',
+		onAction: () => {console.log('ClosePrim')},
+		label: 'ClosePrim',
 		icon: <NavigationClose hoverColor={red500}/>,
 		disabled: false,
 		priority: 2
 	}, {
-		onAction: () => {console.log('action2')},
-		label: 'primAction2',
+		onAction: () => {console.log('ButtonPrim1')},
+		label: 'ButtonPrim1',
 		disabled: true,
 		priority: 2
 	}, {
-		onAction: () => {console.log('action3')},
-		label: 'primAction3',
+		onAction: () => {console.log('EditPrim')},
+		label: 'EditPrim',
 		icon: <Edit hoverColor={blue500}/>,
 		disabled: false,
 		priority: 3
@@ -50,25 +50,25 @@ export const primaryFunctions = [
 
 export const secondaryFunctions = [
 	{
-		onAction: () => {console.log('action4')},
-		label: 'secAction1',
+		onAction: () => {console.log('ButtonSec1')},
+		label: 'ButtonSec1',
 		disabled: false,
 		priority: 3
 	}, {
-		onAction: () => {console.log('action5')},
-		label: 'secAction2',
+		onAction: () => {console.log('CommentSec')},
+		label: 'CommentSec',
 		icon: <Comment hoverColor={blue500}/>,
 		disabled: true,
 		priority: 2
 	}, {
-		onAction: () => {console.log('action1')},
-		label: 'primAction1',
+		onAction: () => {console.log('CloseSec')},
+		label: 'CloseSec',
 		icon: <NavigationClose hoverColor={red500}/>,
 		disabled: false,
 		priority: 3
 	}, {
-		onAction: () => {console.log('action6')},
-		label: 'secAction3',
+		onAction: () => {console.log('MoreSec')},
+		label: 'MoreSec',
 		icon: <MoreVertIcon hoverColor={blue500}/>,
 		disabled: false,
 		priority: 1
@@ -83,7 +83,7 @@ export const hiddenFunctions = [
 		disabled: false,
 		priority: 1
 	}, {
-		href:'Demo2',
+		href:'/Demo2',
 		label: 'Demo2 link',
 		disabled: false,
 		priority: 1

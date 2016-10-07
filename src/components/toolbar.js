@@ -8,28 +8,42 @@ import IconButton from 'material-ui/IconButton';
 import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import { blue500 } from 'material-ui/styles/colors';
 
-const commonPropsHid = (label, key, handler) => {
+const commonPropsHidAct = (label, key, handler, disabled) => {
 	return {
 		style: {display: 'flex', justifyContent: 'center'},
 		insetChildren: true,
 		primaryText: label,
 		key: `hidden-${key}`,
-		onTouchTap: handler
+		onTouchTap: handler,
+		disabled
 	};
 };
-const hideAction = (action, func) => {
-	const handler = func.onAction;
+
+const commonPropsRaisButt = (key, priority, label, handler, disabled) => {
+	return {
+		key: `${key}_${priority}`,
+		label: label,
+		primary: true,
+		onClick: handler,
+		style: {margin: 12},
+		disabled
+	};
+};
+
+const hideAction = (func, key) => {
+	// const handler = func.onAction;
+	const handler = func.onAction ? func.onAction : () => window.location.href=`${func.href}`;
 	if (func.icon) {
 		return (
 			<MenuItem
-				{...commonPropsHid(func.label, action ? action.key : `hiddMenu_${func.priority}`, handler)}
+				{...commonPropsHidAct(func.label, `hiddMenu_${func.priority}_${key}`, handler, func.disabled)}
 				leftIcon={func.icon}
 				/>
 		);
 	} else {
 		return (
 			<MenuItem
-				{...commonPropsHid(func.label, action ? action.key : `hiddMenu_${func.priority}`, handler)}
+				{...commonPropsHidAct(func.label, `hiddMenu_${func.priority}_${key}`, handler, func.disabled)}
 				/>
 		);
 	}
@@ -44,32 +58,19 @@ class MaterialToolbar extends Component {
 		priorityBreakpoint: PropTypes.number.isRequired
 	};
 
-	actionFactory = (func, key, link, buttonDecide) => {
-		if (buttonDecide) {
+	actionFactory = (func, key, link) => {
 			// complete button to toolbar
-			if (link) {
-				<RaisedButton
-					key={`${key}_${func.priority}`}
-					label={func.label}
-					primary={true}
-					onClick={func.onAction}
-					style={{margin: 12}}
-					><Link to={func.href} />
-				</RaisedButton>
-			} else {
-				return (
-					<RaisedButton
-						key={`${key}_${func.priority}`}
-						label={func.label}
-						primary={true}
-						onClick={func.onAction}
-						style={{margin: 12}}
-						/>
-				);
-			}
+		if (link) {
+			<RaisedButton
+				{...commonPropsRaisButt(key, func.priority, func.label, undefined, func.disabled)}
+				><Link to={func.href} />
+			</RaisedButton>
 		} else {
-			//just button text in hidden menu
-			return hideAction(null, func);
+			return (
+				<RaisedButton
+					{...commonPropsRaisButt(key, func.priority, func.label, func.onAction, func.disabled)}
+					/>
+			);
 		}
 	}
 
@@ -97,9 +98,8 @@ class MaterialToolbar extends Component {
 		}
 	};
 
-	getHidFuncToToolbar(funcArr, additionalFunctions) {
-		const hiddenFuncs = [...funcArr, ...additionalFunctions];
-		console.log(hiddenFuncs);
+	getHidFuncToToolbar(funcArr = [], additionalFunctions = []) {
+		return [...funcArr, ...additionalFunctions].map((func, key) => hideAction(func, key));
 	}
 
 	getFuncsToToolbar(resultLabel, funcArr, priorityBP, functionsToHide = []) {
@@ -110,7 +110,7 @@ class MaterialToolbar extends Component {
 				if (func.icon) {
 					action = this.actionIconFactory(func, key);
 				} else if (func.label) {
-					action = this.actionFactory(func, key, false, true)
+					action = this.actionFactory(func, key)
 				} else {
 					console.error('Wrong inserted onAction type function to Toolbar: ', func);
 				}
@@ -118,18 +118,19 @@ class MaterialToolbar extends Component {
 				if (func.icon) {
 					action = this.actionIconFactory(func, key, true);
 				} else if (func.label) {
-					action = this.actionFactory(func, key, true, true)
+					action = this.actionFactory(func, key, true)
 				} else {
 					console.error('Wrong inserted link type function to Toolbar: ', func);
 				}
 			}
 			if (shouldHide) {
-				functionsToHide.push(hideAction(action, func));
+				functionsToHide.push(func);
 				return undefined;
 			} else {
 				return action;
 			}
 		}).filter(action => typeof action !== 'undefined');
+
 		return { [resultLabel]: functions, functionsToHide };
 	}
 
@@ -138,7 +139,7 @@ class MaterialToolbar extends Component {
 		let { primActions, functionsToHide } = this.getFuncsToToolbar('primActions', primaryFunctions, priorityBreakpoint);
 		let { secActions } = this.getFuncsToToolbar('secActions', secondaryFunctions, priorityBreakpoint, functionsToHide);
 		let hidActions = this.getHidFuncToToolbar(hiddenFunctions, functionsToHide);
-		this.setState({primActions, secActions, hidActions: []});
+		this.setState({primActions, secActions, hidActions});
 	}
 
 	menuProvider() {

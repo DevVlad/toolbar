@@ -14,7 +14,6 @@ injectTapEventPlugin();
 class App extends Component {
 
 	render() {
-
 		return (
 			<div className="App">
 				<div className="App-header">
@@ -27,7 +26,7 @@ class App extends Component {
 						primaryFunctions={primaryFunctions}
 						secondaryFunctions={secondaryFunctions}
 						hiddenFunctions={hiddenFunctions}
-						priorityBreakpoint={3}
+						priorityBreakpoint={2}
 					/>
 					<br/>
 					<div>Something else</div>
