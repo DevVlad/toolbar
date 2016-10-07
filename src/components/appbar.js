@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
 import AppBar from 'material-ui/AppBar';
+import IconButton from 'material-ui/IconButton';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 import { primaryFunctions, secondaryFunctions } from '../functionProvider.js';
 
@@ -17,9 +19,9 @@ class Demo1 extends Component {
 			<Paper style={style} zDepth={2}>
 				<AppBar
 					title="AppBar example"
-
+					iconElementRight={<IconButton><MoreVertIcon /></IconButton>}
 				/>
-				<h4>AppBar Route</h4>
+				<h4 style={{textAlign: 'center'}}>AppBar Route</h4>
 			</Paper>
 		);
 	}

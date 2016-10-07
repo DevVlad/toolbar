@@ -10,7 +10,6 @@ import { blue500 } from 'material-ui/styles/colors';
 
 const getHiddenProps = (label, key, handler, disabled) => {
 	return {
-		style: {display: 'flex', justifyContent: 'center'},
 		insetChildren: true,
 		primaryText: label,
 		key: `hidden-${key}`,
@@ -59,7 +58,6 @@ class MaterialToolbar extends Component {
 	};
 
 	actionFactory = (func, key, link) => {
-		console.log(func, key, link);
 			// complete button to toolbar
 		if (link) {
 			return (
