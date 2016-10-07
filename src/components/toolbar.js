@@ -8,7 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import { blue500 } from 'material-ui/styles/colors';
 
-const commonPropsHidAct = (label, key, handler, disabled) => {
+const getHiddenProps = (label, key, handler, disabled) => {
 	return {
 		style: {display: 'flex', justifyContent: 'center'},
 		insetChildren: true,
@@ -19,7 +19,7 @@ const commonPropsHidAct = (label, key, handler, disabled) => {
 	};
 };
 
-const commonPropsRaisButt = (key, priority, label, handler, disabled) => {
+const getRaisButtonProps = (key, priority, label, handler, disabled) => {
 	return {
 		key: `${key}_${priority}`,
 		label: label,
@@ -36,14 +36,14 @@ const hideAction = (func, key) => {
 	if (func.icon) {
 		return (
 			<MenuItem
-				{...commonPropsHidAct(func.label, `hiddMenu_${func.priority}_${key}`, handler, func.disabled)}
+				{...getHiddenProps(func.label, `hiddMenu_${func.priority}_${key}`, handler, func.disabled)}
 				leftIcon={func.icon}
 				/>
 		);
 	} else {
 		return (
 			<MenuItem
-				{...commonPropsHidAct(func.label, `hiddMenu_${func.priority}_${key}`, handler, func.disabled)}
+				{...getHiddenProps(func.label, `hiddMenu_${func.priority}_${key}`, handler, func.disabled)}
 				/>
 		);
 	}
@@ -62,13 +62,13 @@ class MaterialToolbar extends Component {
 			// complete button to toolbar
 		if (link) {
 			<RaisedButton
-				{...commonPropsRaisButt(key, func.priority, func.label, undefined, func.disabled)}
+				{...getRaisButtonProps(key, func.priority, func.label, undefined, func.disabled)}
 				><Link to={func.href} />
 			</RaisedButton>
 		} else {
 			return (
 				<RaisedButton
-					{...commonPropsRaisButt(key, func.priority, func.label, func.onAction, func.disabled)}
+					{...getRaisButtonProps(key, func.priority, func.label, func.onAction, func.disabled)}
 					/>
 			);
 		}
@@ -76,7 +76,7 @@ class MaterialToolbar extends Component {
 
 	actionIconFactory = (func, key, link) => {
 		if (link) {
-			// is it link icon
+			// icon is a link
 			return (
 				<IconButton
 					key={`icon-${key}_${func.priority}`}
