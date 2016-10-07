@@ -30,8 +30,7 @@ const getRaisButtonProps = (key, priority, label, handler, disabled) => {
 };
 
 const hideAction = (func, key) => {
-	// const handler = func.onAction;
-	const handler = func.onAction ? func.onAction : () => window.location.href=`${func.href}`;
+	const handler = func.onAction ? func.onAction : () => browserHistory.push(func.href);
 	if (func.icon) {
 		return (
 			<MenuItem
