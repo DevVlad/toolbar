@@ -53,7 +53,11 @@ class MaterialToolbar extends Component {
 		primaryFunctions: PropTypes.array.isRequired,
 		secondaryFunctions: PropTypes.array.isRequired,
 		hiddenFunctions: PropTypes.array,
-		priorityBreakpoint: PropTypes.number.isRequired
+		priorityBreakpoint: PropTypes.number.isRequired,
+		primaryElements: PropTypes.array,
+		secondaryElements: PropTypes.array,
+		toolbarStyle: PropTypes.object,
+		titleStyle: PropTypes.object
 	};
 
 	actionFactory = (func, key, link) => {
@@ -161,17 +165,23 @@ class MaterialToolbar extends Component {
 	}
 
 	render() {
+		const title = this.props.title ? (
+			<ToolbarGroup>
+				{<ToolbarTitle style={this.props.titleStyle} text={this.props.title} />}
+			</ToolbarGroup>
+		) : null;
+
 		return (
-			<Toolbar>
+			<Toolbar style={this.props.toolbarStyle}>
 				<ToolbarGroup firstChild={true}>
 					{this.state.primActions}
+					{this.props.primaryElements}
 				</ToolbarGroup>
 
-				<ToolbarGroup>
-					<ToolbarTitle text={this.props.title} />
-				</ToolbarGroup>
+				{title}
 
 				<ToolbarGroup lastChild={true}>
+					{this.props.secondaryElements}
 					{this.state.secActions}
 					{this.menuProvider()}
 				</ToolbarGroup>

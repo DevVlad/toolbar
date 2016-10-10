@@ -6,8 +6,37 @@ import Comment from 'material-ui/svg-icons/editor/insert-comment';
 import Home from 'material-ui/svg-icons/action/home';
 import Left from 'material-ui/svg-icons/navigation/chevron-left';
 import Right from 'material-ui/svg-icons/navigation/chevron-right';
+import Bar from 'material-ui/svg-icons/editor/space-bar';
 
-import { blue500, red500 } from 'material-ui/styles/colors';
+import { blue100, blue500, red500 } from 'material-ui/styles/colors';
+
+export const hrefFunctions = [
+	{
+		href: '/',
+		label: 'Home',
+		icon: <Home color="white" hoverColor={blue100}/>,
+		disabled: false,
+		priority: 1
+	}, {
+		href: '/Demo1',
+		label: 'Demo1 link',
+		icon: <Left color="white" hoverColor={blue100}/>,
+		disabled: false,
+		priority: 1
+	}, {
+		href: '/Demo2',
+		label: 'Demo2 link',
+		icon: <Right color="white"  hoverColor={blue100}/>,
+		disabled: false,
+		priority: 1
+	}, {
+		href: '/appbar',
+		label: 'appbar link',
+		icon: <Bar color="white" hoverColor={blue100}/>,
+		disabled: false,
+		priority: 1
+	}
+];
 
 export const primaryFunctions = [
 	{
@@ -26,6 +55,12 @@ export const primaryFunctions = [
 		href: '/Demo2',
 		label: 'Demo2 link',
 		icon: <Right hoverColor={blue500}/>,
+		disabled: false,
+		priority: 1
+	}, {
+		href: '/appbar',
+		label: 'appbar link',
+		icon: <Bar hoverColor={blue500}/>,
 		disabled: false,
 		priority: 1
 	}, {
