@@ -4,7 +4,7 @@ import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
-import MaterialAppBar from './materialAppBar.js';
+import MainBar from './mainBar.js';
 
 import { hrefFunctions } from '../functionProvider.js';
 
@@ -37,7 +37,7 @@ class Appbar extends Component {
 	render() {
 		return (
 			<Paper style={style} zDepth={2}>
-				<MaterialAppBar
+				<MainBar
 					toolbarStyle={{backgroundColor: blue500}}
 					title="AppBarTitle"
 					titleStyle={{color: 'white'}}

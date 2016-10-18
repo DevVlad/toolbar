@@ -7,9 +7,12 @@ import { primaryFunctions, secondaryFunctions, hiddenFunctions } from './functio
 
 import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.css';
 
 import Paper from './components/paper.js';
 import Toolbar from './components/toolbar.js';
+import Streetwalker from './components/streetwalker.js';
+import { streetwalkerData } from './testData.js';
 
 injectTapEventPlugin();
 
@@ -19,6 +22,14 @@ class App extends Component {
 		this.state = {
 			isSnackBarOpen: false
 		};
+	}
+
+	handleInputStrwalker(text) {
+		console.log(text, streetwalkerData);
+		this.setState({
+			streetwalkerSearchText: text,
+			streetwalkerData: streetwalkerData
+		});
 	}
 
 	render() {
@@ -45,6 +56,14 @@ class App extends Component {
 					<button onClick={() => {browserHistory.push('/Demo2')}}>Browser History - Demo2</button>
 					<br/>
 					<button onClick={() => {this.setState({isSnackBarOpen: true})}}>Open Snackbar</button>
+					<br/>
+					<div>&nbsp;</div>
+					<Streetwalker
+						onChange={this.handleInputStrwalker.bind(this)}
+						value={this.state.streetwalkerSearchText}
+						data={this.state.streetwalkerData}
+					/>
+					<div>&nbsp;</div>
 					<Snackbar
 						bodyStyle={{width: 'auto', paddingBottom: '200px'}}
 						open={this.state.isSnackBarOpen}

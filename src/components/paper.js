@@ -3,23 +3,30 @@ import Paper from 'material-ui/Paper';
 import sizeMe from 'react-sizeme';
 
 const style = {
-  height: '80%',
-  width: '80%',
-  margin: 20,
-  display: 'inline-block',
+	width: '80%',
+	height: '800px',
+	margin: 20,
+	display: 'inline-block',
 };
 
 class MyPaper extends Component {
+	renderChildren() {
+		if (this.props.children) {
+			return this.props.children.map((child, key) => {
+				if (child.props.enableListeningToParentWidth) {
+					return React.cloneElement(child, {parentWidth: this.props.size.width, key});
+				} else {
+					return child;
+				}
+			});
+		} else {
+			return <p>Something</p>;
+		}
+	}
 	render() {
 		return (
-			<Paper style={style} zDepth={2}>
-				{this.props.children.map((child, key) => {
-					if (child.props.enableListeningToParentWidth) {
-						return React.cloneElement(child, {parentWidth: this.props.size.width, key});
-					} else {
-						return child;
-					}
-				})}
+			<Paper style={this.props.style || style} zDepth={2}>
+				{this.renderChildren()}
 			</Paper>
 		);
 	}
