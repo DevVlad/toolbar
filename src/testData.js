@@ -1,33 +1,43 @@
+import React from 'react';
+import MapsPlace from 'material-ui/svg-icons/maps/place';
+import Edit from 'material-ui/svg-icons/editor/mode-edit';
+import { blue500 } from 'material-ui/styles/colors';
+import Demo1 from './components/demo1.js';
+
 export const streetwalkerData = [
 	{
 		plugin: 'Firmy',
-		items: ['Firma A', 'Firma B', 'nazev'],
+		items: [{label: 'Firma B', icon: <MapsPlace hoverColor={blue500}/>}],
 		actions: [
 			{
 				label: 'Add new',
-				action: () => console.log('function add new - Firma_handler')
+				action: (x) => x.label
 			}, {
 				label: 'Edit',
-				action: () => console.log('function edit - Firma_handler')
+				action: (x) => x.label
 			}, {
 				label: 'Show',
-				action: () => console.log('function show - Firma_handler')
+				action: (x) => x.label
 			},
 		]
 	}, {
 		plugin: 'Faktury',
-		items: ['f001', 'f002', 'f003', 'f004', 'f005'],
+		items: [{label: 'f001'}, {label: 'f002'}, {label: 'f003'}, {label: 'f004'}, {label: 'f005'}],
 		actions: [
 			{
 				label: 'Edit',
-				action: () => console.log('function edit - Faktura_handler')
+				icon: <Edit hoverColor={blue500}/>,
+				action: (x) => x.label
 			}, {
 				label: 'Show',
-				action: () => console.log('function show - Faktura_handler')
+				action: (x) => x.label
 			}, {
 				label: 'Delete',
-				action: () => console.log('function delete - Faktura_handler')
+				action: (x) => x.label
 			}
 		]
+	}, {
+		plugin: 'Test_Component',
+		component: <Demo1 />
 	}
 ];

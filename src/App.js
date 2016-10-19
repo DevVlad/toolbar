@@ -25,11 +25,22 @@ class App extends Component {
 	}
 
 	handleInputStrwalker(text) {
-		console.log(text, streetwalkerData);
-		this.setState({
-			streetwalkerSearchText: text,
-			streetwalkerData: streetwalkerData
-		});
+		if (text.length === 1) {
+			this.setState({
+				streetwalkerSearchText: text,
+				streetwalkerData: [streetwalkerData[0]]
+			});
+		} else if (text.length > 1) {
+			this.setState({
+				streetwalkerSearchText: text,
+				streetwalkerData: streetwalkerData
+			});
+		} else {
+			this.setState({
+				streetwalkerSearchText: '',
+				streetwalkerData: []
+			});
+		}
 	}
 
 	render() {

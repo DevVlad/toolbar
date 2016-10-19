@@ -3,6 +3,8 @@ import Paper from 'material-ui/Paper';
 import Toolbar from './toolbar.js';
 
 import { primaryFunctions, secondaryFunctions } from '../functionProvider.js';
+import { streetwalkerData } from '../testData.js';
+import { StreetwalkerResults } from './streetwalker.js';
 
 const style = {
   height: '80%',
@@ -21,7 +23,12 @@ class Demo2 extends Component {
 					secondaryFunctions={secondaryFunctions}
 					priorityBreakpoint={2}
 				/>
-			<h4>Demo2 Route</h4>
+				<h4 style={{textAlign: 'center'}}>Demo2 Route</h4>
+				<p>&nbsp;</p>
+				<StreetwalkerResults
+					data={streetwalkerData}
+					showMenu={true}
+				/>
 			</Paper>
 		);
 	}

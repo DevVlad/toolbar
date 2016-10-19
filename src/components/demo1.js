@@ -9,6 +9,7 @@ const style = {
   width: '80%',
   margin: 20,
   display: 'inline-block',
+	textAlign: 'center'
 };
 
 class Demo1 extends Component {
@@ -18,7 +19,8 @@ class Demo1 extends Component {
 				<Toolbar
 					title="Toolbar example"
 					primaryFunctions={primaryFunctions}
-					secondaryFunctions={secondaryFunctions}
+					secondaryFunctions={[]}
+					// secondaryFunctions={secondaryFunctions}
 					priorityBreakpoint={1}
 				/>
 				<h4>Demo1 Route</h4>
