@@ -1,31 +1,35 @@
 import React, { Component, PropTypes } from 'react';
 import _ from 'lodash';
 import ClickAwayListener from 'material-ui/internal/ClickAwayListener';
-
 import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
-import ArrowDropRight from 'material-ui/svg-icons/hardware/keyboard-arrow-right.js';
+import MoreIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
+import SearchIcon from 'material-ui/svg-icons/action/search';
+import { grey500 } from 'material-ui/styles/colors';
+
 
 const defaultStyle = {
 	input: {
 		width: '70%',
+		maxWidth: '70%',
 		display: 'inline-block',
-		zIndex: 90
+		zIndex: 90,
 	},
 	paper: {
 		maxHeight: '400px',
+		dosplay: 'inline-block',
 		overflowY: 'scroll',
-		overflowX: 'hidden',
-		width: '70%'
+		overflowX: 'hidden'
 	},
 	menu: {
 		width: '100%',
-		textAlign: 'left'
+		maxWidth: '100%',
+		textAlign: 'left',
 	},
 	menuItem: {
-		width: 'inherit'
+		maxWidth: '100%'
 	}
 };
 
@@ -42,6 +46,7 @@ class Streetwalker extends Component {
 		this.state = {
 			styles: {
 				inputStyle: {
+					paddingLeft: '25px',
 					...defaultStyle.input,
 					...props.inputStyle
 				},
@@ -142,7 +147,18 @@ class Streetwalker extends Component {
 
 	render() {
 		return (
-			<div style={this.state.inputStyle}>
+			<div style={this.props.style}>
+				<SearchIcon
+					style={{
+						position: 'absolute',
+						transform: 'translate(5px, 8px)',
+						// transform: 'translate(0px, 5px)',
+						opacity: '0.8',
+						width: '18px',
+						height: '18px'
+					}}
+					color={grey500}
+				/>
 				<input
 					ref="input"
 					className="form-control"
@@ -165,6 +181,7 @@ export default Streetwalker;
 Streetwalker.propTypes = {
 	data: PropTypes.array,
 	value: PropTypes.string,
+	style: PropTypes.object,
 	inputStyle: PropTypes.object,
 	menuStyle: PropTypes.object,
 	paperStyle: PropTypes.object,
@@ -175,6 +192,11 @@ Streetwalker.propTypes = {
 
 Streetwalker.defaultProps = {
 	data: []
+};
+
+const streetwalkerResultDefaultSyle = {
+	width: '100%',
+	maxWidth: '100%'
 };
 
 // Menu and result component
@@ -204,7 +226,7 @@ export class StreetwalkerResults extends Component {
 		let other = {};
 		if (plugin.actions) {
 			other = {
-				rightIcon: <ArrowDropRight/>,
+				rightIcon: <MoreIcon/>,
 				menuItems: this.buildFunctions(plugin.actions, item)
 			};
 		}
@@ -285,23 +307,24 @@ export class StreetwalkerResults extends Component {
 	render() {
 		if (this.props.showMenu && this.props.data) {
 			return (
-				<ClickAwayListener style={this.props.paperStyle} onClickAway={this.handleClose}>
-					<Paper
-						zDepth={2}
-						style={this.props.paperStyle}
-					>
-						<Menu
-							{...this.props.menuProps}
-							ref="menu"
-							style={this.props.menuStyle}
-							listStyle={this.props.menuStyle}
-							desktop={true}
-							initiallyKeyboardFocused={true}
-							onEscKeyDown={this.handleClose}
-						>
-							{this.renderMenuItems()}
-						</Menu>
-					</Paper>
+				<ClickAwayListener onClickAway={this.handleClose}>
+				<Paper zDepth={2} style={this.props.paperStyle || streetwalkerResultDefaultSyle}>
+
+					<Menu
+						{...this.props.menuProps}
+						ref="menu"
+						style={this.props.menuStyle || streetwalkerResultDefaultSyle}
+						listStyle={this.props.menuStyle}
+						listStyle={{
+							width: '100%'
+						}}
+						desktop={true}
+						initiallyKeyboardFocused={true}
+						onEscKeyDown={this.handleClose}
+					>{this.renderMenuItems()}
+					</Menu>
+
+				</Paper>
 				</ClickAwayListener>
 			);
 		}
@@ -313,7 +336,6 @@ StreetwalkerResults.propTypes = {
 	data: PropTypes.array,
 	menuProps: PropTypes.object,
 	menuStyle: PropTypes.object,
-	menuItemProps: PropTypes.object,
 	menuItemStyle: PropTypes.object,
 	paperStyle: PropTypes.object,
 	showMenu: PropTypes.bool,

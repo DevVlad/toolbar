@@ -7,6 +7,7 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import { blue500 } from 'material-ui/styles/colors';
+import Streetwalker from './streetwalker.js';
 
 const getHiddenProps = (label, key, handler, disabled) => {
 	return {
@@ -24,8 +25,8 @@ const getRaisButtonProps = (key, priority, label, handler, disabled) => {
 		label: label,
 		primary: true,
 		onClick: handler,
-		style: {margin: 12},
-		disabled
+		// style: {margin: 0},
+		disabled,
 	};
 };
 
@@ -47,7 +48,7 @@ const hideAction = (func, key) => {
 	}
 };
 
-class MaterialToolbar extends Component {
+class UberToolbar extends Component {
 	static propTypes = {
 		title: PropTypes.string,
 		primaryFunctions: PropTypes.array.isRequired,
@@ -57,22 +58,48 @@ class MaterialToolbar extends Component {
 		primaryElements: PropTypes.array,
 		secondaryElements: PropTypes.array,
 		toolbarStyle: PropTypes.object,
-		titleStyle: PropTypes.object
+		titleStyle: PropTypes.object,
+		assistant: PropTypes.object,
+		iconColor: PropTypes.string
 	};
+
+	constructor(props) {
+		super(props);
+
+		const { primaryFunctions, secondaryFunctions, hiddenFunctions, priorityBreakpoint } = this.props;
+		let { primActions, functionsToHide } = this.getFuncsToToolbar('primActions', primaryFunctions, priorityBreakpoint);
+		let { secActions } = this.getFuncsToToolbar('secActions', secondaryFunctions, priorityBreakpoint, functionsToHide);
+		let hidActions = this.getHidFuncToToolbar(hiddenFunctions, functionsToHide);
+
+		this.state = {primActions, secActions, hidActions};
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { primaryFunctions, secondaryFunctions, hiddenFunctions, priorityBreakpoint } = nextProps;
+		let { primActions, functionsToHide } = this.getFuncsToToolbar('primActions', primaryFunctions, priorityBreakpoint);
+		let { secActions } = this.getFuncsToToolbar('secActions', secondaryFunctions, priorityBreakpoint, functionsToHide);
+		let hidActions = this.getHidFuncToToolbar(hiddenFunctions, functionsToHide);
+		this.setState({primActions, secActions, hidActions});
+	}
 
 	actionFactory = (func, key, link) => {
 			// complete button to toolbar
 		if (link) {
 			return (
-				<RaisedButton
-					{...getRaisButtonProps(key, func.priority, func.label, () => browserHistory.push(func.href), func.disabled)}
-					/>
+				<div key={`div_${key}`} style={{paddingTop: '3%'}}>
+					<a type="button" key={key} className="btn btn-default" href={func.href}>{func.label}</a>
+				</div>
+				// <div key={`div_${key}`} style={{marginTop: '-2%'}}>
+				// 	<a style={{fontSize: '2rem', ...this.props.fontStyle}} key={key} href={func.href} className="navbar-text">{func.label}</a>
+				// </div>
+				// <RaisedButton {...getRaisButtonProps(key, func.priority, func.label, () => browserHistory.push(func.href), func.disabled)} />
 			);
 		} else {
 			return (
-				<RaisedButton
-					{...getRaisButtonProps(key, func.priority, func.label, func.onAction, func.disabled)}
-					/>
+				<div key={`div_${key}`}  style={{paddingTop: '2%'}}>
+					<button style={this.props.fontSize} type="button" key={key} className="btn btn-info" onClick={func.onAction}>{func.label}</button>
+				</div>
+				// <RaisedButton {...getRaisButtonProps(key, func.priority, func.label, func.onAction, func.disabled)} />
 			);
 		}
 	}
@@ -137,14 +164,6 @@ class MaterialToolbar extends Component {
 		return { [resultLabel]: functions, functionsToHide };
 	}
 
-	componentWillMount() {
-		const { primaryFunctions, secondaryFunctions, hiddenFunctions, priorityBreakpoint } = this.props;
-		let { primActions, functionsToHide } = this.getFuncsToToolbar('primActions', primaryFunctions, priorityBreakpoint);
-		let { secActions } = this.getFuncsToToolbar('secActions', secondaryFunctions, priorityBreakpoint, functionsToHide);
-		let hidActions = this.getHidFuncToToolbar(hiddenFunctions, functionsToHide);
-		this.setState({primActions, secActions, hidActions});
-	}
-
 	menuProvider() {
 		if (this.state.hidActions.length > 0) {
 			return (
@@ -153,11 +172,30 @@ class MaterialToolbar extends Component {
 					targetOrigin={{horizontal: 'right', vertical: 'top'}}
 					iconButtonElement={
 						<IconButton touch={true}>
-							<NavigationExpandMoreIcon hoverColor={blue500}/>
+							<NavigationExpandMoreIcon color={this.props.iconColor} hoverColor={blue500}/>
 						</IconButton>
 					}
 				>{this.state.hidActions}
 				</IconMenu>
+			);
+		} else {
+			return null;
+		}
+	}
+
+	assistant() {
+		if (this.props.assistant) {
+			return (
+				<ToolbarGroup style={{position: 'relative', width: '50%'}}>
+					<Streetwalker
+						style={{
+							maxWidth: '150%',
+							width: '150%',
+							transform: 'translate(0%, 20%)'
+						}}
+						{...this.props.assistant}
+					/>
+				</ToolbarGroup>
 			);
 		} else {
 			return null;
@@ -173,14 +211,15 @@ class MaterialToolbar extends Component {
 
 		return (
 			<Toolbar style={this.props.toolbarStyle}>
-				<ToolbarGroup firstChild={true}>
+				<ToolbarGroup style={{marginTop: '5px'}} firstChild={true}>
 					{this.state.primActions}
 					{this.props.primaryElements}
 				</ToolbarGroup>
 
 				{title}
+				{this.assistant()}
 
-				<ToolbarGroup lastChild={true}>
+				<ToolbarGroup style={{marginTop: '5px'}} lastChild={true}>
 					{this.props.secondaryElements}
 					{this.state.secActions}
 					{this.menuProvider()}
@@ -190,4 +229,4 @@ class MaterialToolbar extends Component {
 	}
 };
 
-export default MaterialToolbar;
+export default UberToolbar;

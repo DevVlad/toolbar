@@ -3,11 +3,12 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import { browserHistory } from 'react-router'
 import Snackbar from 'material-ui/Snackbar';
 
-import { primaryFunctions, secondaryFunctions, hiddenFunctions } from './functionProvider.js';
+import { primaryFunctions, secondaryFunctions, hiddenFunctions, hrefFunctions } from './functionProvider.js';
 
 import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
+import { blue300 } from 'material-ui/styles/colors';
 
 import Paper from './components/paper.js';
 import Toolbar from './components/toolbar.js';
@@ -25,16 +26,17 @@ class App extends Component {
 	}
 
 	handleInputStrwalker(text) {
-		if (text.length === 1) {
+		if (text) {
 			this.setState({
 				streetwalkerSearchText: text,
-				streetwalkerData: [streetwalkerData[0]]
+				streetwalkerData: [streetwalkerData[1]]
 			});
-		} else if (text.length > 1) {
-			this.setState({
-				streetwalkerSearchText: text,
-				streetwalkerData: streetwalkerData
-			});
+			setTimeout(() => {
+				this.setState({
+					streetwalkerSearchText: text,
+					streetwalkerData: streetwalkerData
+				});
+			}, 5000);
 		} else {
 			this.setState({
 				streetwalkerSearchText: '',
@@ -54,11 +56,20 @@ class App extends Component {
 				</div>
 				<Paper>
 					<Toolbar
-						title="Toolbar example"
-						primaryFunctions={primaryFunctions}
+						title="Uber-Toolbar"
+						iconColor="white"
+						titleStyle={{color: 'white'}}
+						toolbarStyle={{backgroundColor: blue300}}
+						fontStyle={{color: 'white'}}
+						primaryFunctions={hrefFunctions}
 						secondaryFunctions={secondaryFunctions}
 						hiddenFunctions={hiddenFunctions}
 						priorityBreakpoint={1}
+						assistant={{
+							data: this.state.streetwalkerData,
+							onChange: this.handleInputStrwalker.bind(this),
+							value: this.state.streetwalkerSearchText
+						}}
 					/>
 					<br/>
 					<div>Something else</div>
@@ -69,12 +80,13 @@ class App extends Component {
 					<button onClick={() => {this.setState({isSnackBarOpen: true})}}>Open Snackbar</button>
 					<br/>
 					<div>&nbsp;</div>
-					<Streetwalker
+					{/*}<Streetwalker
 						onChange={this.handleInputStrwalker.bind(this)}
 						value={this.state.streetwalkerSearchText}
 						data={this.state.streetwalkerData}
-					/>
+					/>*/}
 					<div>&nbsp;</div>
+					<p>saldasdsofosnfsdnfosfosdfosdfnsdofnsdongodfgndo</p>
 					<Snackbar
 						bodyStyle={{width: 'auto', paddingBottom: '200px'}}
 						open={this.state.isSnackBarOpen}

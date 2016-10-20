@@ -20,7 +20,7 @@ class MyPaper extends Component {
 				}
 			});
 		} else {
-			return <p>Something</p>;
+			return <h1 style={{textAlign: 'center'}}>Something</h1>;
 		}
 	}
 	render() {

@@ -17,25 +17,25 @@ export const hrefFunctions = [
 		icon: <Home color="white" hoverColor={blue100}/>,
 		disabled: false,
 		priority: 1
-	}, {
-		href: '/Demo1',
-		label: 'Demo1 link',
-		icon: <Left color="white" hoverColor={blue100}/>,
-		disabled: false,
-		priority: 1
-	}, {
-		href: '/Demo2',
-		label: 'Demo2 link',
-		icon: <Right color="white"  hoverColor={blue100}/>,
-		disabled: false,
-		priority: 1
-	}, {
-		href: '/appbar',
-		label: 'appbar link',
-		icon: <Bar color="white" hoverColor={blue100}/>,
-		disabled: false,
-		priority: 1
-	}
+	},// {
+	// 	href: '/Demo1',
+	// 	label: 'Demo1 link',
+	// 	icon: <Left color="white" hoverColor={blue100}/>,
+	// 	disabled: false,
+	// 	priority: 1
+	// }, {
+	// 	href: '/Demo2',
+	// 	label: 'Demo2 link',
+	// 	icon: <Right color="white"  hoverColor={blue100}/>,
+	// 	disabled: false,
+	// 	priority: 1
+	// }, {
+	// 	href: '/appbar',
+	// 	label: 'appbar link',
+	// 	icon: <Bar color="white" hoverColor={blue100}/>,
+	// 	disabled: false,
+	// 	priority: 1
+	// }
 ];
 
 export const primaryFunctions = [
@@ -104,7 +104,7 @@ export const secondaryFunctions = [
 	}, {
 		onAction: () => {console.log('MoreSec')},
 		label: 'MoreSec',
-		icon: <MoreVertIcon hoverColor={blue500}/>,
+		icon: <MoreVertIcon color="white" hoverColor={blue500}/>,
 		disabled: false,
 		priority: 1
 	}, {

@@ -2,7 +2,7 @@ import React from 'react';
 import MapsPlace from 'material-ui/svg-icons/maps/place';
 import Edit from 'material-ui/svg-icons/editor/mode-edit';
 import { blue500 } from 'material-ui/styles/colors';
-import Demo1 from './components/demo1.js';
+import Paper from './components/paper.js';
 
 export const streetwalkerData = [
 	{
@@ -38,6 +38,6 @@ export const streetwalkerData = [
 		]
 	}, {
 		plugin: 'Test_Component',
-		component: <Demo1 />
+		component: <div>ahoj</div>//<Paper children={[<h2 key="example">Example component</h2>]}/>
 	}
 ];

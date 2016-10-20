@@ -19,8 +19,8 @@ class Demo1 extends Component {
 				<Toolbar
 					title="Toolbar example"
 					primaryFunctions={primaryFunctions}
-					secondaryFunctions={[]}
-					// secondaryFunctions={secondaryFunctions}
+					// secondaryFunctions={[]}
+					secondaryFunctions={secondaryFunctions}
 					priorityBreakpoint={1}
 				/>
 				<h4>Demo1 Route</h4>

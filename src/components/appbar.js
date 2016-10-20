@@ -5,7 +5,6 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import MainBar from './mainBar.js';
-import Streetwalker from './streetwalker.js';
 
 import { hrefFunctions } from '../functionProvider.js';
 import { streetwalkerData } from '../testData.js';
@@ -67,19 +66,14 @@ class Appbar extends Component {
 			<Paper style={style} zDepth={2}>
 				<MainBar
 					toolbarStyle={{backgroundColor: blue300}}
-					title="AppBarTitle"
 					titleStyle={{color: 'white'}}
-					helper={
-						<Streetwalker
-							onChange={this.handleInputStrwalker.bind(this)}
-							value={this.state.streetwalkerSearchText}
-							data={this.state.streetwalkerData}
-							inputStyle={{
-								width: '250px'
-							}}
-						/>
-					}
-					// primaryFunctions={hrefFunctions}
+					title="AppBarTitle"
+					assistant={{
+						data: this.state.streetwalkerData,
+						onChange: this.handleInputStrwalker.bind(this),
+						value: this.state.streetwalkerSearchText
+					}}
+					primaryFunctions={hrefFunctions}
 					// secondaryElements={[<Menu key={'menu'}/>]}
 					// priorityBreakpoint={50}
 					/>
