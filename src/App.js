@@ -26,21 +26,19 @@ class App extends Component {
 	}
 
 	handleInputStrwalker(text) {
-		if (text) {
+		if (text.length === 1) {
 			this.setState({
 				streetwalkerSearchText: text,
 				streetwalkerData: [streetwalkerData[1]]
 			});
 			setTimeout(() => {
 				this.setState({
-					streetwalkerSearchText: text,
 					streetwalkerData: streetwalkerData
 				});
 			}, 5000);
 		} else {
 			this.setState({
-				streetwalkerSearchText: '',
-				streetwalkerData: []
+				streetwalkerSearchText: text
 			});
 		}
 	}

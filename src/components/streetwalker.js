@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import _ from 'lodash';
 import ClickAwayListener from 'material-ui/internal/ClickAwayListener';
 import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
+
 import MoreIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import { grey500 } from 'material-ui/styles/colors';
@@ -39,9 +39,9 @@ class Streetwalker extends Component {
 
 		this.handleSearchText = this.handleSearchText.bind(this);
 		this.handleKeyDown = this.handleKeyDown.bind(this);
-		this.handleMenuClose = this.handleMenuClose.bind(this);
 		this.handleExternalFunction = this.handleExternalFunction.bind(this);
-		this.handleClick = this.handleClick.bind(this);
+		this.handleInputClick = this.handleInputClick.bind(this);
+		this.handleMenuCloseRequest = this.handleMenuCloseRequest.bind(this);
 
 		this.state = {
 			styles: {
@@ -65,21 +65,37 @@ class Streetwalker extends Component {
 				}
 			},
 			placeholder: props.placeHolder || 'Search',
-			isMenu: false,
-			showMenu: props.data ? true : false
+			showMenu: props.data.length !== 0 ? true : false
 		};
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.data && !this.state.showMenu) {
-			this.setState({showMenu: true});
+		if (nextProps.data.length !== 0 && !this.state.showMenu && !this.state.taskComplete) {
+			this.openMenu();
 		}
+		this.focusInput();
 	}
 
-	handleExternalFunction(action) {
-		console.log('handleExternalFunction', action.fn(action.item));
-		// Something
-		this.props.onChange(action.fn(action.item));
+	handleMenuCloseRequest() {
+		// StreetwalkerResults ask for close
+		console.log('close req');
+		this.closeMenu();
+	}
+
+	closeMenu(param = {}) {
+		this.setState({
+			showMenu: false,
+			taskComplete: true,
+			...param
+		});
+		this.focusInput();
+	}
+
+	openMenu(param = {}, focus) {
+		this.setState({
+			showMenu: true,
+			...param
+		});
 	}
 
 	focusInput() {
@@ -88,47 +104,41 @@ class Streetwalker extends Component {
 		}, 0);
 	}
 
+	handleExternalFunction(action, param) {
+		// menuItem action
+		this.props.onChange(action.fn(action.item));
+		this.closeMenu(param);
+	}
+
 	handleSearchText(event) {
 		this.props.onChange(event.target.value);
 		this.focusInput();
 	}
 
-	handleClick(event) {
-		if (this.props.data) {
-			this.setState({
-				showMenu: !this.state.showMenu
-			});
-			this.focusInput();
+	handleInputClick() {
+		if (this.props.data.length !== 0) {
+			this.state.showMenu ? this.closeMenu() : this.openMenu();
 		}
 	}
 
 	handleKeyDown(event) {
+		// handle arrow-up
+		if (event.keyCode === 38) {
+			this.closeMenu();
+		}
 		// handle arrow-down
 		if (event.keyCode === 40) {
-			this.setState({
-				inMenu: true,
-				showMenu: this.props.value && this.props.data ? true : false
-			});
+			this.openMenu({taskComplete: false}, 'focus');
 		}
-		// handleEsc
+		// handle ESC
 		if (event.keyCode === 27) {
-			this.setState({
-				showMenu: false
-			});
+			this.closeMenu();
 			this.focusInput();
 		}
 	}
 
-	handleMenuClose() {
-		this.setState({
-			inMenu: false,
-			showMenu: false
-		});
-		this.focusInput();
-	}
-
 	getMenu() {
-		if (this.props.value && this.props.data) {
+		if (this.props.value && this.props.data && this.state.showMenu) {
 			return (
 				<StreetwalkerResults
 					data={this.props.data}
@@ -136,9 +146,9 @@ class Streetwalker extends Component {
 					paperStyle={this.state.styles.paperStyle}
 					menuItemStyle={this.state.styles.menuItemStyle}
 					menuProps={this.props.menuProps}
-					onClose={this.handleMenuClose}
+					onClose={this.handleMenuCloseRequest}
 					showMenu={this.state.showMenu}
-					externalFunction={this.handleExternalFunction}
+					onChange={this.handleExternalFunction}
 				/>
 			);
 		}
@@ -147,12 +157,12 @@ class Streetwalker extends Component {
 
 	render() {
 		return (
+			<ClickAwayListener onClickAway={() => this.closeMenu()}>
 			<div style={this.props.style}>
 				<SearchIcon
 					style={{
 						position: 'absolute',
 						transform: 'translate(5px, 8px)',
-						// transform: 'translate(0px, 5px)',
 						opacity: '0.8',
 						width: '18px',
 						height: '18px'
@@ -168,10 +178,11 @@ class Streetwalker extends Component {
 					onChange={this.handleSearchText}
 					value={this.props.value || ''}
 					onKeyDown={this.handleKeyDown}
-					onClick={this.handleClick}
+					onClick={this.handleInputClick}
 				/>
 					{this.getMenu()}
 			</div>
+			</ClickAwayListener>
 		);
 	}
 }
@@ -199,23 +210,57 @@ const streetwalkerResultDefaultSyle = {
 	maxWidth: '100%'
 };
 
+const getItems = (data) => {
+	return [].concat(...data.map(plugin => {
+		if (plugin.component) {
+			return `MenuItem_${plugin.plugin}_component`;
+		} else {
+			if (plugin.items.length === 1) {
+				return plugin.actions.map((action, key) => `MenuItem_${plugin.plugin}_${key}`);
+			} else {
+				return plugin.items.map((item, key) => `MenuItem_${plugin.plugin}_${key}`);
+			}
+		}
+	}));
+};
+
 // Menu and result component
 export class StreetwalkerResults extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 
-		this.handleClose = this.handleClose.bind(this);
+		this.askForClose = this.askForClose.bind(this);
+		this.handleKeyDown = this.handleKeyDown.bind(this);
+
+		const items = getItems(props.data);
+		this.state = {
+			plugins: props.data.length !== 0 ? props.data.map(plugin => plugin.plugin) : [],
+			focusedItemIndex: 0,
+			focusedItem: items[0],
+			items: items
+		};
 	}
 
-	buildFunctions(actions, item) {
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.data.length !== 0) {
+			this.setState({
+				plugins: nextProps.data.map(plugin => plugin.plugin),
+				items: getItems(nextProps.data)
+			});
+		}
+	}
+
+	buildFunctions(actions, item, plugin) {
 		return actions.map((action, key) => {
+			const keyToPass = `MenuItem_${plugin.plugin}_${key}`;
 			return (
 				<MenuItem
+					focusState={this.state.focusedItem === keyToPass ? "keyboard-focused" : "none"}
 					style={this.props.menuItemStyle}
-					key={action.label}
+					key={keyToPass}
 					insetChildren
 					primaryText={action.label || 'missing label property'}
-					onClick={this.handleExternalFunction.bind(this, {fn: action.action, item: item})}
+					onTouchTap={this.handleOnChange.bind(this, {fn: action.action, item: item})}
 					leftIcon={action.icon}
 				/>
 			);
@@ -223,109 +268,146 @@ export class StreetwalkerResults extends Component {
 	}
 
 	menuItemBuilder(item, key, plugin) {
-		let other = {};
+		let menuItemProps = {};
 		if (plugin.actions) {
-			other = {
+			menuItemProps = {
 				rightIcon: <MoreIcon/>,
-				menuItems: this.buildFunctions(plugin.actions, item)
+				menuItems: this.buildFunctions(plugin.actions, item, plugin)
 			};
 		}
 		if (item.icon) {
-			other = {
-				...other,
+			menuItemProps = {
+				...menuItemProps,
 				leftIcon: item.icon
 			};
 		}
+		const keyToPass = `MenuItem_${plugin.plugin}_${key}`;
 		return (
 			<MenuItem
-				{...other}
+				{...menuItemProps}
+				focusState={this.state.focusedItem === keyToPass ? "keyboard-focused" : "none"}
 				insetChildren
 				style={this.props.menuItemStyle}
-				key={`MenuItem_${plugin.plugin}_${key}`}
+				key={keyToPass}
 				primaryText={item.label || 'missing label property'}
 			/>
 		);
 	}
 
 	renderMenuItems() {
-		return this.props.data.map((plugin, catKey) => {
-			let output;
+		return this.props.data.map((plugin, pluginKey) => {
+			let menuContent;
 			if (plugin.component) {
 				// for this plugin is component
-				output = [
+				const keyToPass = `MenuItem_${plugin.plugin}_component`;
+				menuContent = [
 					<MenuItem
+						focusState={this.state.focusedItem === keyToPass ? "keyboard-focused" : "none"}
+						key={keyToPass}
 						insetChildren
 						style={this.props.menuItemStyle}
 						children={plugin.component}
 					/>,
-					catKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
+					pluginKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
 				];
 			} else if (plugin.items.length > 1) {
 				// menu of items, on each few functions are avaible
-				output = [
+				menuContent = [
 					...plugin.items.map((item, key) => this.menuItemBuilder(item, key, plugin)),
-					catKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
+					pluginKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
 				];
 			} else {
 				// only one item
-				output = [
+				menuContent = [
 					...plugin.actions.map((action, key) => {
+						const keyToPass = `MenuItem_${plugin.plugin}_${key}`;
 						return (
 							<MenuItem
+								focusState={this.state.focusedItem === keyToPass ? "keyboard-focused" : "none"}
 								style={this.props.menuItemStyle}
 								leftIcon={plugin.items[0].icon}
-								key={`MenuItem_${plugin.plugin}_${key}`}
+								key={keyToPass}
 								insetChildren
 								primaryText={`${plugin.items[0].label} - ${action.label}` || 'missing label property'}
-								onClick={this.handleExternalFunction.bind(this, {fn: action.action, item: plugin.items[0]})}
+								onTouchTap={this.handleOnChange.bind(this, {fn: action.action, item: plugin.items[0]})}
 							/>
 						);
 					}),
-					catKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
+					pluginKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
 				];
 			}
-			return output;
+			return menuContent;
 		});
 	}
 
-	handleClose() {
-		setTimeout(() => {
-			this.props.onClose();
-		}, 0);
+	askForClose() {
+		this.props.onClose();
 	}
 
-	handleExternalFunction(action, event) {
-		event.preventDefault();
-		if (this.props.externalFunction) {
-			this.props.externalFunction(action);
+	handleOnChange(action) {
+		if (this.props.onChange) {
+			this.props.onChange(action);
 		} else {
 			action.fn(action.item);
 		}
-		this.handleClose();
+		// this.askForClose();
+	}
+
+	handleItemFocus(action) {
+		let { focusedItem, focusedItemIndex, items } = this.state;
+		switch(action) {
+			case 'increment':
+				if (focusedItemIndex === items.length - 1) {
+					focusedItemIndex = 0;
+					focusedItem = items[0];
+				} else {
+					focusedItemIndex += 1;
+					focusedItem = items[focusedItemIndex];
+				}
+				break;
+			case 'decrement':
+				if (focusedItemIndex === 0) {
+					focusedItemIndex = items.length - 1;
+					focusedItem = items[focusedItemIndex];
+				} else {
+					focusedItemIndex -= 1;
+					focusedItem = items[focusedItemIndex];
+				}
+				break;
+		}
+		this.setState({focusedItemIndex, focusedItem});
+	}
+
+	handleKeyDown(event) {
+		event.stopPropagation();
+		if (event.keyCode === 27) {
+			// handle ESC
+			this.askForClose();
+		} else if (event.keyCode === 38) {
+			// handle arrow-up
+			this.handleItemFocus('decrement');
+		} else if (event.keyCode === 40) {
+			// handle arrow-down
+			this.handleItemFocus('increment');
+		}
 	}
 
 	render() {
-		if (this.props.showMenu && this.props.data) {
+		console.log('StreetwalkerResults RENDER', this.state.focusedItem);
+		if (this.props.data) {
 			return (
-				<ClickAwayListener onClickAway={this.handleClose}>
 				<Paper zDepth={2} style={this.props.paperStyle || streetwalkerResultDefaultSyle}>
-
 					<Menu
 						{...this.props.menuProps}
-						ref="menu"
 						style={this.props.menuStyle || streetwalkerResultDefaultSyle}
 						listStyle={this.props.menuStyle}
-						listStyle={{
-							width: '100%'
-						}}
 						desktop={true}
 						initiallyKeyboardFocused={true}
-						onEscKeyDown={this.handleClose}
+						onEscKeyDown={this.askForClose}
+						onKeyDown={this.handleKeyDown}
 					>{this.renderMenuItems()}
 					</Menu>
-
 				</Paper>
-				</ClickAwayListener>
 			);
 		}
 		return null;
@@ -338,13 +420,12 @@ StreetwalkerResults.propTypes = {
 	menuStyle: PropTypes.object,
 	menuItemStyle: PropTypes.object,
 	paperStyle: PropTypes.object,
-	showMenu: PropTypes.bool,
 	onClose: PropTypes.func,
-	externalFunction: PropTypes.func
+	onChange: PropTypes.func,
+	onKeyDown: PropTypes.func
 };
 
 StreetwalkerResults.defaultProps = {
 	data: [],
-	showMenu: false,
 	onClose: () => {}
 };

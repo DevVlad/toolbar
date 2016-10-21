@@ -11,13 +11,13 @@ export const streetwalkerData = [
 		actions: [
 			{
 				label: 'Add new',
-				action: (x) => x.label
+				action: (x) => `Add_new_${x.label}`
 			}, {
 				label: 'Edit',
-				action: (x) => x.label
+				action: (x) => `Edit_${x.label}`
 			}, {
 				label: 'Show',
-				action: (x) => x.label
+				action: (x) => `Show_${x.label}`
 			},
 		]
 	}, {
@@ -27,13 +27,13 @@ export const streetwalkerData = [
 			{
 				label: 'Edit',
 				icon: <Edit hoverColor={blue500}/>,
-				action: (x) => x.label
+				action: (x) => `Edit_${x.label}`
 			}, {
 				label: 'Show',
-				action: (x) => x.label
+				action: (x) => `Show_${x.label}`
 			}, {
 				label: 'Delete',
-				action: (x) => x.label
+				action: (x) => `Delete_${x.label}`
 			}
 		]
 	}, {

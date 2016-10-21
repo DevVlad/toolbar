@@ -27,7 +27,6 @@ class Demo2 extends Component {
 				<p>&nbsp;</p>
 				<StreetwalkerResults
 					data={streetwalkerData}
-					showMenu={true}
 				/>
 			</Paper>
 		);
