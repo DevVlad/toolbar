@@ -17,7 +17,7 @@ const style = {
 	textAlign: 'center'
 };
 
-const menuItemsProps= [{primaryText:"Single",insetChildren:true}, {primaryText:"Double",insetChildren:true}, {primaryText:"Add space before paragraph"}]
+const menuItemsProps= [{primaryText:"Single"}, {primaryText:"Double"}, {primaryText:"Add space before paragraph"}]
 
 class Demo1 extends Component {
 	constructor() {
@@ -47,9 +47,9 @@ class Demo1 extends Component {
 
 	getItems() {
 		return menuItemsProps.map((item, key) => {
-			const isFocused = this.state.focusedItem === key ? "focused" : "none";
+			const isFocused = this.state.focusedItem === key ? "keyboard-focused" : "none";
 			console.log('getItems', isFocused, key);
-			return <MenuItem key={key} {...item} focusState={isFocused}/>;
+			return <MenuItem key={key} {...item} focusState={isFocused} children={[<input/>]}/>;
 		});
 	}
 
@@ -68,7 +68,7 @@ class Demo1 extends Component {
 					<Menu
 						desktop={true}
 						width={320}
-						onKeyDown={this.handleKeyDown}
+						// onKeyDown={this.handleKeyDown}
 						initiallyKeyboardFocused={true}
 					>{this.getItems()}
 					</Menu>

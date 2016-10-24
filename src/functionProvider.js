@@ -29,13 +29,7 @@ export const hrefFunctions = [
 		icon: <Right color="white"  hoverColor={blue100}/>,
 		disabled: false,
 		priority: 1
-	},// {
-	// 	href: '/appbar',
-	// 	label: 'appbar link',
-	// 	icon: <Bar color="white" hoverColor={blue100}/>,
-	// 	disabled: false,
-	// 	priority: 1
-	// }
+	}
 ];
 
 export const primaryFunctions = [
@@ -55,12 +49,6 @@ export const primaryFunctions = [
 		href: '/Demo2',
 		label: 'Demo2 link',
 		icon: <Right hoverColor={blue500}/>,
-		disabled: false,
-		priority: 1
-	}, {
-		href: '/appbar',
-		label: 'appbar link',
-		icon: <Bar hoverColor={blue500}/>,
 		disabled: false,
 		priority: 1
 	}, {
