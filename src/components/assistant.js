@@ -33,7 +33,7 @@ const defaultStyle = {
 	}
 };
 
-class Streetwalker extends Component {
+class Assistant extends Component {
 	constructor(props) {
 		super(props);
 
@@ -77,7 +77,7 @@ class Streetwalker extends Component {
 	}
 
 	handleMenuCloseRequest() {
-		// StreetwalkerResults ask for close
+		// AssistantResults ask for close
 		console.log('close req');
 		this.closeMenu();
 	}
@@ -142,7 +142,7 @@ class Streetwalker extends Component {
 	getMenu() {
 		if (this.props.value && this.props.data && this.state.showMenu) {
 			return (
-				<StreetwalkerResults
+				<AssistantResults
 					data={this.props.data}
 					menuStyle={this.state.styles.menuStyle}
 					paperStyle={this.state.styles.paperStyle}
@@ -189,9 +189,9 @@ class Streetwalker extends Component {
 	}
 }
 
-export default Streetwalker;
+export default Assistant;
 
-Streetwalker.propTypes = {
+Assistant.propTypes = {
 	data: PropTypes.array,
 	value: PropTypes.string,
 	style: PropTypes.object,
@@ -203,11 +203,11 @@ Streetwalker.propTypes = {
 	onChange: PropTypes.func.isRequired
 };
 
-Streetwalker.defaultProps = {
+Assistant.defaultProps = {
 	data: []
 };
 
-const streetwalkerResultDefaultSyle = {
+const assistantResultsDefaultSyle = {
 	width: '100%',
 	maxWidth: '100%'
 };
@@ -228,7 +228,7 @@ const getItems = (data) => {
 };
 
 // Menu and result component
-export class StreetwalkerResults extends Component {
+export class AssistantResults extends Component {
 	constructor(props) {
 		super(props);
 
@@ -394,14 +394,13 @@ export class StreetwalkerResults extends Component {
 	}
 
 	render() {
-		console.log('StreetwalkerResults RENDER', this.state.focusedItem);
 		if (this.props.data) {
 			return (
-				<Paper zDepth={2} style={this.props.paperStyle || streetwalkerResultDefaultSyle}>
+				<Paper zDepth={2} style={this.props.paperStyle || assistantResultsDefaultSyle}>
 					<Menu
 						{...this.props.menuProps}
 						tabIndex={-1}
-						style={this.props.menuStyle || streetwalkerResultDefaultSyle}
+						style={this.props.menuStyle || assistantResultsDefaultSyle}
 						listStyle={this.props.menuStyle}
 						desktop={true}
 						initiallyKeyboardFocused={true}
@@ -417,7 +416,7 @@ export class StreetwalkerResults extends Component {
 	}
 }
 
-StreetwalkerResults.propTypes = {
+AssistantResults.propTypes = {
 	data: PropTypes.array,
 	menuProps: PropTypes.object,
 	menuStyle: PropTypes.object,
@@ -429,7 +428,7 @@ StreetwalkerResults.propTypes = {
 	focusedItemIndex: PropTypes.number
 };
 
-StreetwalkerResults.defaultProps = {
+AssistantResults.defaultProps = {
 	data: [],
 	onClose: () => {}
 };

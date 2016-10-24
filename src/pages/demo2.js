@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
-import Toolbar from './toolbar.js';
+import Toolbar from '../components/toolbar.js';
 
 import { primaryFunctions, secondaryFunctions } from '../functionProvider.js';
-import { streetwalkerData } from '../testData.js';
-import { StreetwalkerResults } from './streetwalker.js';
+import { assistantData } from '../assistantData.js';
+import { AssistantResults } from '../components/assistant.js';
 
 const style = {
   height: '80%',
@@ -25,8 +25,8 @@ class Demo2 extends Component {
 				/>
 				<h4 style={{textAlign: 'center'}}>Demo2 Route</h4>
 				<p>&nbsp;</p>
-				<StreetwalkerResults
-					data={streetwalkerData}
+				<AssistantResults
+					data={assistantData}
 				/>
 			</Paper>
 		);

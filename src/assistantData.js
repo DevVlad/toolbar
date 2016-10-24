@@ -4,7 +4,7 @@ import Edit from 'material-ui/svg-icons/editor/mode-edit';
 import { blue500 } from 'material-ui/styles/colors';
 import Paper from './components/paper.js';
 
-export const streetwalkerData = [
+export const assistantData = [
 	{
 		plugin: 'Firmy',
 		items: [{label: 'Firma B', icon: <MapsPlace hoverColor={blue500}/>}],

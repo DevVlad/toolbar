@@ -7,7 +7,7 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import { blue500 } from 'material-ui/styles/colors';
-import Streetwalker from './streetwalker.js';
+import Assistant from './assistant.js';
 
 const getHiddenProps = (label, key, handler, disabled) => {
 	return {
@@ -187,7 +187,7 @@ class UberToolbar extends Component {
 		if (this.props.assistant) {
 			return (
 				<ToolbarGroup style={{position: 'relative', width: '50%'}}>
-					<Streetwalker
+					<Assistant
 						style={{
 							maxWidth: '150%',
 							width: '150%',

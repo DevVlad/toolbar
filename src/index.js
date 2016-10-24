@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory } from 'react-router'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import App from './App';
-import Demo1 from './components/demo1.js';
-import Demo2 from './components/demo2.js';
+import App from './App.js';
+import Demo1 from './pages/demo1.js';
+import Demo2 from './pages/demo2.js';
 
 import './index.css';
 

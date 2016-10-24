@@ -5,7 +5,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 
-import Toolbar from './toolbar.js';
+import Toolbar from '../components/toolbar.js';
 
 import { primaryFunctions, secondaryFunctions } from '../functionProvider.js';
 

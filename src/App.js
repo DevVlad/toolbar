@@ -12,8 +12,7 @@ import { blue300 } from 'material-ui/styles/colors';
 
 import Paper from './components/paper.js';
 import Toolbar from './components/toolbar.js';
-import Streetwalker from './components/streetwalker.js';
-import { streetwalkerData } from './testData.js';
+import { assistantData } from './assistantData.js';
 
 injectTapEventPlugin();
 
@@ -25,20 +24,20 @@ class App extends Component {
 		};
 	}
 
-	handleInputStrwalker(text) {
+	handleInputAssistant(text) {
 		if (text.length === 1) {
 			this.setState({
-				streetwalkerSearchText: text,
-				streetwalkerData: [streetwalkerData[1]]
+				assistantSearchText: text,
+				assistantData: [assistantData[1]]
 			});
 			setTimeout(() => {
 				this.setState({
-					streetwalkerData: streetwalkerData
+					assistantData: assistantData
 				});
 			}, 5000);
 		} else {
 			this.setState({
-				streetwalkerSearchText: text
+				assistantSearchText: text
 			});
 		}
 	}
@@ -64,9 +63,9 @@ class App extends Component {
 						hiddenFunctions={hiddenFunctions}
 						priorityBreakpoint={1}
 						assistant={{
-							data: this.state.streetwalkerData,
-							onChange: this.handleInputStrwalker.bind(this),
-							value: this.state.streetwalkerSearchText
+							data: this.state.assistantData,
+							onChange: this.handleInputAssistant.bind(this),
+							value: this.state.assistantSearchText
 						}}
 					/>
 					<br/>
@@ -77,12 +76,6 @@ class App extends Component {
 					<br/>
 					<button onClick={() => {this.setState({isSnackBarOpen: true})}}>Open Snackbar</button>
 					<br/>
-					<div>&nbsp;</div>
-					{/*}<Streetwalker
-						onChange={this.handleInputStrwalker.bind(this)}
-						value={this.state.streetwalkerSearchText}
-						data={this.state.streetwalkerData}
-					/>*/}
 					<div>&nbsp;</div>
 					<p>saldasdsofosnfsdnfosfosdfosdfnsdofnsdongodfgndo</p>
 					<Snackbar
