@@ -1,14 +1,16 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
+import SizeMe from 'react-sizeme';
+
 import ClickAwayListener from 'material-ui/internal/ClickAwayListener';
 import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
-
+import Popover from 'material-ui/Popover';
 import MoreIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import { grey500 } from 'material-ui/styles/colors';
-
 
 const defaultStyle = {
 	input: {
@@ -21,12 +23,14 @@ const defaultStyle = {
 		maxHeight: '400px',
 		dosplay: 'inline-block',
 		overflowY: 'scroll',
-		overflowX: 'hidden'
+		overflowX: 'hidden',
+		width: '100%',
+		maxWidth: '100%'
 	},
 	menu: {
 		width: '100%',
 		maxWidth: '100%',
-		textAlign: 'left',
+		textAlign: 'left'
 	},
 	menuItem: {
 		maxWidth: '100%'
@@ -39,7 +43,7 @@ class Assistant extends Component {
 
 		this.handleSearchText = this.handleSearchText.bind(this);
 		this.handleKeyDown = this.handleKeyDown.bind(this);
-		this.handleExternalFunction = this.handleExternalFunction.bind(this);
+		this.handleInternalFunc = this.handleInternalFunc.bind(this);
 		this.handleInputClick = this.handleInputClick.bind(this);
 		this.handleMenuCloseRequest = this.handleMenuCloseRequest.bind(this);
 
@@ -51,7 +55,6 @@ class Assistant extends Component {
 					...props.inputStyle
 				},
 				paperStyle: {
-					...defaultStyle.input,
 					...defaultStyle.paper,
 					...props.paperStyle
 				},
@@ -69,31 +72,46 @@ class Assistant extends Component {
 		};
 	}
 
+	componentDidMount() {
+		// setting of anchorEl, otherwise popover will render somewhere else
+		this.setState({anchorEl: ReactDOM.findDOMNode(this.refs.input)});
+	}
+
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.data.length !== 0 && !this.state.showMenu && !this.state.taskComplete) {
+		if (nextProps.data.length !== 0 && !this.state.showMenu) {
 			this.openMenu();
 		}
-		this.focusInput();
+	}
+
+	componentWillUnmount() {
+		// because of rounting
+		// change of route -> unmounting, but there could be pending req to menuClose
+		if (this.closeMenuTimer) {
+			clearTimeout(this.closeMenuTimer);
+		}
 	}
 
 	handleMenuCloseRequest() {
 		// AssistantResults ask for close
-		console.log('close req');
-		this.closeMenu();
+		if (this.state.showMenu) {
+			this.closeMenu();
+		}
 	}
 
 	closeMenu(param = {}) {
-		this.setState({
-			showMenu: false,
-			taskComplete: true,
-			...param
-		});
-		this.focusInput();
+		this.closeMenuTimer = setTimeout(() => {
+			this.setState({
+				showMenu: false,
+				anchorEl: null,
+				...param
+			});
+		}, 0);
 	}
 
-	openMenu(param = {}, focus) {
+	openMenu(param = {}) {
 		this.setState({
 			showMenu: true,
+			anchorEl: ReactDOM.findDOMNode(this.refs.input),
 			...param
 		});
 	}
@@ -106,10 +124,14 @@ class Assistant extends Component {
 		}, 0);
 	}
 
-	handleExternalFunction(action, param) {
-		// menuItem action
-		this.props.onChange(action.fn(action.item));
-		this.closeMenu(param);
+	handleInternalFunc(action, param) {
+		// menuItem submit function
+		if (this.props.handleInternalFunc) {
+			this.props.handleInternalFunc(action);
+		} else {
+			action.fn(action.item);
+			if (this.state.showMenu) this.closeMenu();
+		}
 	}
 
 	handleSearchText(event) {
@@ -130,7 +152,7 @@ class Assistant extends Component {
 		}
 		// handle arrow-down
 		if (event.keyCode === 40) {
-			this.openMenu({taskComplete: false}, 'focus');
+			this.openMenu();
 		}
 		// handle ESC
 		if (event.keyCode === 27) {
@@ -139,18 +161,18 @@ class Assistant extends Component {
 		}
 	}
 
-	getMenu() {
-		if (this.props.value && this.props.data && this.state.showMenu) {
+	getMenu(popoverStyle) {
+		if (this.props.data && this.state.showMenu) {
 			return (
 				<AssistantResults
 					data={this.props.data}
-					menuStyle={this.state.styles.menuStyle}
-					paperStyle={this.state.styles.paperStyle}
-					menuItemStyle={this.state.styles.menuItemStyle}
+					menuStyle={{...this.state.styles.menuStyle, ...popoverStyle}}
+					paperStyle={{...this.state.styles.paperStyle, ...popoverStyle}}
+					menuItemStyle={{...this.state.styles.menuItemStyle, ...popoverStyle}}
 					menuProps={this.props.menuProps}
 					onClose={this.handleMenuCloseRequest}
 					showMenu={this.state.showMenu}
-					onChange={this.handleExternalFunction}
+					onChange={this.handleInternalFunc}
 				/>
 			);
 		}
@@ -158,41 +180,58 @@ class Assistant extends Component {
 	}
 
 	render() {
+		// Assistant component has 70% of parrent width, just because I like it (:
+		const popoverStyle = {
+			width: 0.7 * this.props.size.width,
+			maxWidth: 0.7 * this.props.size.width
+		};
+
 		return (
-			<ClickAwayListener onClickAway={() => this.closeMenu()}>
-				<div style={this.props.style}>
-					<SearchIcon
-						style={{
-							position: 'absolute',
-							transform: 'translate(5px, 8px)',
-							opacity: '0.8',
-							width: '18px',
-							height: '18px'
-						}}
-						color={grey500}
-					/>
-					<input
-						ref="input"
-						className="form-control"
-						style={this.state.styles.inputStyle}
-						type="text"
-						placeholder="Search"
-						onChange={this.handleSearchText}
-						value={this.props.value || ''}
-						onKeyDown={this.handleKeyDown}
-						onClick={this.handleInputClick}
-					/>
-						{this.getMenu()}
-				</div>
-			</ClickAwayListener>
+			<div style={this.props.style}>
+				<SearchIcon
+					style={{
+						position: 'absolute',
+						transform: 'translate(5px, 8px)',
+						opacity: '0.8',
+						width: '18px',
+						height: '18px'
+					}}
+					color={grey500}
+				/>
+				<input
+					ref="input"
+					className="form-control"
+					style={this.state.styles.inputStyle}
+					type="text"
+					placeholder="Search"
+					onChange={this.handleSearchText}
+					value={this.props.value || ''}
+					onKeyDown={this.handleKeyDown}
+					onClick={this.handleInputClick}
+				/>
+				<Popover
+					style={{...this.state.styles.menuStyle, ...popoverStyle}}
+					canAutoPosition={false}
+					anchorOrigin={{
+						vertical: 'bottom',
+						horizontal: 'left',
+					}}
+					open={this.state.showMenu}
+					anchorEl={this.state.anchorEl}
+					useLayerForClickAway={false}
+					onRequestClose={this.handleMenuCloseRequest}
+					animated={false}
+				>{this.getMenu(popoverStyle)}
+				</Popover>
+			</div>
 		);
 	}
 }
 
-export default Assistant;
+export default SizeMe()(Assistant);
 
 Assistant.propTypes = {
-	data: PropTypes.array,
+	data: PropTypes.array.isRequired,
 	value: PropTypes.string,
 	style: PropTypes.object,
 	inputStyle: PropTypes.object,
@@ -200,7 +239,9 @@ Assistant.propTypes = {
 	paperStyle: PropTypes.object,
 	placeHolder: PropTypes.string,
 	menuProps: PropTypes.object,
-	onChange: PropTypes.func.isRequired
+	onChange: PropTypes.func.isRequired,
+	size: PropTypes.object.isRequired,
+	handleInternalFunc: PropTypes.func
 };
 
 Assistant.defaultProps = {
@@ -219,10 +260,14 @@ const getItems = (data) => {
 		if (plugin.component) {
 			return getItemKey(plugin, 'component');
 		} else {
-			if (plugin.items.length === 1) {
-				return plugin.actions.map((action, key) => getItemKey(plugin, key));
+			if (plugin.items && plugin.items.length !== 0 && plugin.items.length === 1) {
+				if (plugin.actions) {
+					return plugin.actions.map((action, key) => getItemKey(plugin, key));
+				}
+				return getItemKey(plugin, '0');
+			} else if (plugin.items && plugin.items.length !== 0) {
+				return plugin.items.map((item, key) => getItemKey(plugin, key));
 			}
-			return plugin.items.map((item, key) => getItemKey(plugin, key));
 		}
 	}));
 };
@@ -245,24 +290,29 @@ export class AssistantResults extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.data.length !== 0) {
+		if (nextProps.data.length !== 0 && this.props.showMenu) {
 			this.setState({
 				plugins: nextProps.data.map(plugin => plugin.plugin),
-				items: getItems(nextProps.data)
+				items: getItems(nextProps.data),
+				anchorEl: ReactDOM.findDOMNode(this.refs.searchTextField)
 			});
 		}
 	}
 
+	getSeparator(isNeeded) {
+		return isNeeded ? <Divider style={this.props.menuItemStyle}/> : null;
+	}
+
 	menuItemsFactory(keyToPass, plugin) {
-		const common = {
+		const menuItemProps = {
 			key: keyToPass,
 			value: keyToPass,
 			insetChildren: true,
 			style: this.props.menuItemStyle,
 			children: plugin.component || null,
-			focusState: this.state.focusedItem === keyToPass ? "keyboard-focused" : "none"
+			focusState: this.state.focusedItem === keyToPass ? "focused" : "none",
 		};
-		return <MenuItem {...common}/>;
+		return <MenuItem {...menuItemProps}/>;
 	}
 
 	functionsFactory(actions, item, plugin) {
@@ -280,7 +330,7 @@ export class AssistantResults extends Component {
 
 	menuItemBuilder(item, key, plugin) {
 		let menuItemProps = {};
-		if (plugin.actions) {
+		if (plugin.actions && !item.action) {
 			menuItemProps = {
 				rightIcon: <MoreIcon/>,
 				menuItems: this.functionsFactory(plugin.actions, item, plugin)
@@ -290,6 +340,12 @@ export class AssistantResults extends Component {
 			menuItemProps = {
 				...menuItemProps,
 				leftIcon: item.icon
+			};
+		}
+		if (item.action) {
+			menuItemProps = {
+				...menuItemProps,
+				onTouchTap: this.handleOnChange.bind(this, {fn: item.action, item: item}) //item.action
 			};
 		}
 		const keyToPass = getItemKey(plugin, key);
@@ -305,32 +361,44 @@ export class AssistantResults extends Component {
 		return this.props.data.map((plugin, pluginKey) => {
 			let menuContent;
 			if (plugin.component) {
-				// for this plugin is component
+				// component for this plugin
 				const keyToPass = getItemKey(plugin, 'component');
 				menuContent = [
 					this.menuItemsFactory(keyToPass, plugin),
-					pluginKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
+					this.getSeparator(pluginKey !== this.props.data.length - 1)
 				];
-			} else if (plugin.items.length > 1) {
+			} else if (plugin.items && plugin.items.length === 1) {
+				// only one item
+				if (plugin.actions) {
+					menuContent = [
+						...plugin.actions.map((action, key) => {
+							const keyToPass = getItemKey(plugin, key);
+							return (
+								React.cloneElement(this.menuItemsFactory(keyToPass, plugin), {
+									leftIcon: plugin.items[0].icon || null,
+									primaryText: `${plugin.items[0].label} - ${action.label}` || 'missing label property',
+									onTouchTap: this.handleOnChange.bind(this, {fn: action.action, item: item})
+								})
+							);
+						}),
+						this.getSeparator(pluginKey !== this.props.data.length - 1)
+					];
+				} else if (plugin.items) {
+					const keyToPass = getItemKey(plugin, '0');
+					menuContent = plugin.items[0] ? [
+						React.cloneElement(this.menuItemsFactory(keyToPass, plugin), {
+							leftIcon: plugin.items[0] ? plugin.items[0].icon : null,
+							primaryText: `${plugin.items[0].label} - ${plugin.items[0].label}` || 'missing label property',
+							onTouchTap: this.handleOnChange.bind(this, {fn: plugin.items[0].action, item: plugin.items[0]})//plugin.items[0].action
+						}),
+						this.getSeparator(pluginKey !== this.props.data.length - 1)
+					] : null;
+				}
+			} else if (plugin.items) {
 				// menu of items, on each few functions are avaible
 				menuContent = [
 					...plugin.items.map((item, key) => this.menuItemBuilder(item, key, plugin)),
-					pluginKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
-				];
-			} else {
-				// only one item
-				menuContent = [
-					...plugin.actions.map((action, key) => {
-						const keyToPass = `MenuItem_${plugin.plugin}_${key}`;
-						return (
-							React.cloneElement(this.menuItemsFactory(keyToPass, plugin), {
-								leftIcon: plugin.items[0].icon || null,
-								primaryText: `${plugin.items[0].label} - ${action.label}` || 'missing label property',
-								onTouchTap: this.handleOnChange.bind(this, {fn: action.action, item: plugin.items[0]})
-							})
-						);
-					}),
-					pluginKey !== this.props.data.length - 1 ? <Divider style={this.props.menuItemStyle}/> : null
+					this.getSeparator(pluginKey !== this.props.data.length - 1)
 				];
 			}
 			return menuContent;
@@ -341,13 +409,9 @@ export class AssistantResults extends Component {
 		this.props.onClose();
 	}
 
-	handleOnChange(action) {
-		if (this.props.onChange) {
-			this.props.onChange(action);
-		} else {
-			action.fn(action.item);
-		}
-		// this.askForClose();
+	handleOnChange(action, event) {
+		action.fn(event);
+		this.askForClose();
 	}
 
 	handleItemFocus(action) {
@@ -375,28 +439,30 @@ export class AssistantResults extends Component {
 		this.setState({focusedItemIndex, focusedItem});
 	}
 
-	// TODO: unable to pass prop FOCUSSTATE to MenuItem - https://github.com/callemall/material-ui/issues/5346
-	// skipped for now, focus issues
+	//	TODO: unable to pass prop focusState to MenuItem
+	// 	https://github.com/callemall/material-ui/issues/5346
+	// 	focus issues, for now skipped
 	handleKeyDown(event) {
+		event.preventDefault();
 		if (event.keyCode === 27) {
 			// handle ESC
-			event.preventDefault();
 			this.askForClose();
 		} else if (event.keyCode === 38) {
 			// handle arrow-up
-			event.preventDefault();
 			this.handleItemFocus('decrement');
 		} else if (event.keyCode === 40) {
 			// handle arrow-down
-			event.preventDefault();
 			this.handleItemFocus('increment');
 		}
 	}
 
 	render() {
-		if (this.props.data) {
+		if (this.props.data.length !== 0) {
 			return (
-				<Paper zDepth={2} style={this.props.paperStyle || assistantResultsDefaultSyle}>
+				<Paper
+					zDepth={2}
+					style={this.props.paperStyle || assistantResultsDefaultSyle}
+				>
 					<Menu
 						{...this.props.menuProps}
 						tabIndex={-1}
@@ -406,8 +472,7 @@ export class AssistantResults extends Component {
 						initiallyKeyboardFocused={true}
 						onEscKeyDown={this.askForClose}
 						// onKeyDown={this.handleKeyDown}
-					>
-						{this.renderMenuItems()}
+					>{this.renderMenuItems()}
 					</Menu>
 				</Paper>
 			);
@@ -417,15 +482,15 @@ export class AssistantResults extends Component {
 }
 
 AssistantResults.propTypes = {
-	data: PropTypes.array,
+	data: PropTypes.array.isRequired,
 	menuProps: PropTypes.object,
 	menuStyle: PropTypes.object,
 	menuItemStyle: PropTypes.object,
 	paperStyle: PropTypes.object,
 	onClose: PropTypes.func,
-	onChange: PropTypes.func,
-	onKeyDown: PropTypes.func,
-	focusedItemIndex: PropTypes.number
+	onChange: PropTypes.func.isRequired,
+	focusedItemIndex: PropTypes.number, // not avaible for now
+	showMenu: PropTypes.bool
 };
 
 AssistantResults.defaultProps = {
