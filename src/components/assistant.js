@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import SizeMe from 'react-sizeme';
 
-import ClickAwayListener from 'material-ui/internal/ClickAwayListener';
 import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -10,7 +9,7 @@ import Divider from 'material-ui/Divider';
 import Popover from 'material-ui/Popover';
 import MoreIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import SearchIcon from 'material-ui/svg-icons/action/search';
-import { grey500 } from 'material-ui/styles/colors';
+import { grey500, blue100 } from 'material-ui/styles/colors';
 
 const defaultStyle = {
 	input: {
@@ -304,6 +303,12 @@ export class AssistantResults extends Component {
 	}
 
 	menuItemsFactory(keyToPass, plugin) {
+		const selectedStyle = this.state.focusedItem === keyToPass ? {
+			innerDivStyle: {
+				backgroundColor: blue100,
+				color: "white"
+			}
+		} : {};
 		const menuItemProps = {
 			key: keyToPass,
 			value: keyToPass,
@@ -311,6 +316,7 @@ export class AssistantResults extends Component {
 			style: this.props.menuItemStyle,
 			children: plugin.component || null,
 			focusState: this.state.focusedItem === keyToPass ? "focused" : "none",
+			...selectedStyle
 		};
 		return <MenuItem {...menuItemProps}/>;
 	}
@@ -377,7 +383,7 @@ export class AssistantResults extends Component {
 								React.cloneElement(this.menuItemsFactory(keyToPass, plugin), {
 									leftIcon: plugin.items[0].icon || null,
 									primaryText: `${plugin.items[0].label} - ${action.label}` || 'missing label property',
-									onTouchTap: this.handleOnChange.bind(this, {fn: action.action, item: item})
+									onTouchTap: this.handleOnChange.bind(this, {fn: action.action, item: plugin.items[0]})
 								})
 							);
 						}),
@@ -416,6 +422,7 @@ export class AssistantResults extends Component {
 
 	handleItemFocus(action) {
 		let { focusedItem, focusedItemIndex, items } = this.state;
+		console.log(this.MenuItem_Firmy_2);
 		switch(action) {
 			case 'increment':
 				if (focusedItemIndex === items.length - 1) {
@@ -469,9 +476,10 @@ export class AssistantResults extends Component {
 						style={this.props.menuStyle || assistantResultsDefaultSyle}
 						listStyle={this.props.menuStyle}
 						desktop={true}
-						initiallyKeyboardFocused={true}
-						onEscKeyDown={this.askForClose}
-						// onKeyDown={this.handleKeyDown}
+						multiple={false}
+						// initiallyKeyboardFocused={false}
+						// onEscKeyDown={this.askForClose}
+						onKeyDown={this.handleKeyDown}
 					>{this.renderMenuItems()}
 					</Menu>
 				</Paper>
@@ -495,5 +503,6 @@ AssistantResults.propTypes = {
 
 AssistantResults.defaultProps = {
 	data: [],
-	onClose: () => {}
+	onClose: () => {},
+	onChange: () => {}
 };
